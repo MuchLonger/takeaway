@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="takeaway.dao.dish.DishMapper">
+    <insert id="insertDish">
+        insert into dish
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            <if test="shopId != null">
+                shopId,
+            </if>
+            <if test="dishPrice != null and dishPrice != ''">
+                dishPrice,
+            </if>
+            <if test="dishName != null and dishName != ''">
+                dishName,
+            </if>
+            <if test="dishDetails != null and dishDetails != ''">
+                dishDetails,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="shopId != null">
+                #{shopId},
+            </if>
+            <if test="dishPrice != null and dishPrice != ''">
+                #{dishPrice},
+            </if>
+            <if test="dishName != null and dishName != ''">
+                #{dishName},
+            </if>
+            <if test="dishDetails != null and dishDetails != ''">
+                #{dishDetails},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateDish">
+        update dish
+        <set>
+            <if test="dishName != null and dishName !=''">
+                dishName=#{dishName},
+            </if>
+            <if test="dishPrice != null">
+                dishPrice=#{dishPrice},
+            </if>
+            <if test="dishDetails != null and dishDetails !=''">
+                dishDetails=#{dishDetails},
+            </if>
+        </set>
+        <where>
+            <if test="dishId != null">
+                and dishId=#{dishId}
+            </if>
+        </where>
+    </update>
+    <delete id="deleteDish">
+        delete from dish
+        <where>
+            <if test="dishId != null">
+                and dishId=#{dishId}
+            </if>
+        </where>
+    </delete>
+
+    <select id="queryDishByDishId" resultType="takeaway.action.Dish">
+        select * from dish
+        <where>
+            <if test="dishId != null">
+                and dishId=#{dishId}
+            </if>
+        </where>
+    </select>
+</mapper>

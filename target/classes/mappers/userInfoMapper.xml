@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="takeaway.dao.login.userInfoMapper">
+
+    <update id="updateUserByUser">
+        update user
+        <set>
+            <if test="userName != null and userName != ''">
+                userName=#{userName},
+            </if>
+            <if test="tel != null">
+                userTel=#{tel},
+            </if>
+            <if test="addr != null and addr != ''">
+                userAddress=#{addr},
+            </if>
+        </set>
+        <where>
+            <if test="id != null">
+               and goToUserNum=#{id}
+            </if>
+        </where>
+    </update>
+    <update id="updatePassWordByUser">
+        update login
+        <set>
+            <if test="password != null and password != ''">
+                password=#{password}
+            </if>
+        </set>
+        <where>
+            <if test="id != null">
+                and goToUserNum=#{id}
+            </if>
+        </where>
+    </update>
+</mapper>

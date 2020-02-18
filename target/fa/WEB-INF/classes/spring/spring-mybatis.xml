@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+      http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <!--扫描mapper包下的注解，除了Controller注解-->
+    <context:component-scan base-package="takeaway.dao">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!--引入数据库文件-->
+    <context:property-placeholder location="classpath:database.properties"/>
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <!--连接的属性-->
+        <property name="driverClass" value="${jdbc.driver}"/>
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <!--选定属性-->
+        <!--池内最大连接数-->
+        <property name="maxPoolSize" value="30"/>
+        <!--池内最小连接数-->
+        <property name="minPoolSize" value="10"/>
+        <!--关闭连接后是否自动commit（当前是不自动）-->
+        <property name="autoCommitOnClose" value="false"/>
+        <!--获取连接超时时间-->
+        <property name="checkoutTimeout" value="100000"/>
+        <!--连接失败时重试次数-->
+        <property name="acquireRetryAttempts" value="2"/>
+    </bean>
+
+
+    <!--整合mybatis-->
+    <!--先注入mybatis的sqlSessionFactory，再声明事务管理-->
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--注入数据源，即上面的数据库信息-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--将检索在资源文件下面的com/cq/mapper任意层中的xml文件，注意是资源目录文件夹（resources）-->
+        <property name="mapperLocations" value="classpath:/mappers/**/*.xml"/>
+        <property name="configuration">
+            <bean class="org.apache.ibatis.session.Configuration">
+                <!--mybatis的常用配置，如下就是添加数据库"_"转为的驼峰命名-->
+                <property name="mapUnderscoreToCamelCase" value="true"/>
+            </bean>
+        </property>
+        <!--插件配置-->
+        <property name="plugins">
+            <array>
+                <!--分页插件的配置 使用拦截器的形式实现分页功能-->
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <value>
+                            helperDialect=mysql
+                            resonable=true
+                            supportMethodsArguments=true
+                            params=count=countSql
+                            autoRuntimeDialetct=true
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <!--持久层接口-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--基础包设置-->
+        <property name="basePackage" value="takeaway.dao"/>
+        <!--配置好sqlSession，value值就是上面配好的id-->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactoryBean"/>
+    </bean>
+
+    <!--事务的管理，使用数据源事务管理类管理-->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!--数据源，就是上上面配置的数据库连接值之类的-->
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--确定事务管理的策略，tx即是事务-->
+    <tx:advice transaction-manager="transactionManager" id="transactionAdvice">
+        <tx:attributes>
+            <!--凡是select get quert开头的都设置为只读-->
+            <tx:method name="select*" read-only="true"/>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="query*" read-only="true"/>
+            <!--凡是delete update insert add带修改的，一旦遇到异常着事务自动回滚(注意这里的回滚指的是整个service层都会回滚)-->
+            <tx:method name="delete*" propagation="REQUIRED"
+                       rollback-for="Exception"/>
+            <tx:method name="update*" propagation="REQUIRED"
+                       rollback-for="Exception"/>
+            <tx:method name="insert*" propagation="REQUIRED"
+                       rollback-for="Exception"/>
+            <tx:method name="add*" propagation="REQUIRED"
+                       rollback-for="Exception"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--如果采用注解的方式进行事务的配置，就在Service的实现类上标注Transanctional注解即可-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!--将配置的事务管理织入到service包下-->
+    <aop:config>
+        <aop:pointcut id="txCut" expression="execution(* takeaway.services..*.*(..))"/>
+        <!--使用上面配置好的切面来切com.cq.service包下的切点-->
+        <aop:advisor advice-ref="transactionAdvice" pointcut-ref="txCut"/>
+    </aop:config>
+
+
+</beans>

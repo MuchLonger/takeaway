@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="takeaway.dao.login.LoginMapper">
+    <!-- 登陆查询 -->
+    <select id="queryPull" resultType="takeaway.action.Login">
+        select *
+        from login
+        <where>
+            <if test="account != null and account != ''">
+                and account=#{account}
+            </if>
+            and password=#{password}
+        </where>
+    </select>
+
+    <!--获取点餐人的信息-->
+    <select id="queryUser" resultType="takeaway.action.User">
+        select *
+        from user
+        <where>
+            and goToUserNum=#{goToUserNum}
+        </where>
+    </select>
+    <!--获取商人的信息-->
+    <select id="queryBusiness" resultType="takeaway.action.Business">
+        select *
+        from business
+        <where>
+            and goToUserNum=#{goToUserNum}
+        </where>
+    </select>
+
+    <!--注册功能分布完成，1.先添加进login表-->
+    <insert id="insertLogin" parameterType="takeaway.action.LoginWithUser">
+        insert into login(role,account,password)  values (#{role},#{account},#{password});
+    </insert>
+    <!--第二步是查找goToUserNum来确定信息-->
+    <select id="queryNum" resultType="java.lang.Integer">
+        select goToUserNum
+        from login
+        <where>
+            <if test="account != null and account != ''">
+                and account=#{account}
+            </if>
+        </where>
+    </select>
+    <!--第三步之添加USER表信息，先将LoginWithUser赋值(用上面的queryNum获取值再赋值)，再插入到User表-->
+    <insert id="insertUser" parameterType="takeaway.action.LoginWithUser">
+        insert into user(goToUserNum, role, userName, userTel, userRegTime, userAddress) VALUES (#{num}
+        ,#{lwu.role}
+        ,#{lwu.userName}
+        ,#{lwu.userTel}
+        ,#{lwu.userRegTime}
+        ,#{lwu.userAddress})
+    </insert>
+    <!--第三步之添加商家表的信息-->
+    <insert id="insertShop" parameterType="takeaway.action.LoginWithBus">
+        insert into business(goToUserNum,shopName, shopAddress, role, shopTel) VALUES (#{num}
+        ,#{lws.shopName}
+        ,#{lws.shopAddress}
+        ,#{lws.role}
+        ,#{lws.shopTel}
+        )
+    </insert>
+
+    <!--用来获取对应的地址附近的商家的列表-->
+    <select id="queryBusinessList" resultType="takeaway.action.Business">
+        <bind name="_addr" value="'%'+addr+'%'"></bind>
+        select *
+        from business
+        <where>
+            <if test="addr != null and addr !=''">
+                and shopAddress like #{_addr}
+            </if>
+            and operatingStatus=1
+            LIMIT 10;
+        </where>
+    </select>
+
+    <!--用来返回订单表的信息-->
+    <select id="queryOrderList" resultType="takeaway.action.Order">
+        select *
+        from orders
+        <where>
+            <if test="goToUserNum != null">
+                and goToUserNum = #{goToUserNum}
+            </if>
+        </where>
+        order by orderTime desc
+    </select>
+
+    <select id="queryBusinessByName" resultType="takeaway.action.Business">
+        select *
+        from business
+        <where>
+            <if test="shopName != null and shopName != ''">
+                and shopName=#{shopName};
+            </if>
+        </where>
+    </select>
+
+    <select id="queryLoginByNum" resultType="takeaway.action.Login">
+        select *
+        from login
+        <where>
+            <if test="goToUserNum != null">
+                and goToUserNum = #{goToUserNum};
+            </if>
+        </where>
+    </select>
+
+
+    <select id="queryLoginByAll" resultType="takeaway.action.Login">
+        select * from login;
+    </select>
+    <select id="queryLoginByAccount" resultType="takeaway.action.Login">
+        select * from login
+        <where>
+            <if test="account != null and account != ''">
+                and account =#{account}
+            </if>
+        </where>
+    </select>
+</mapper>
+

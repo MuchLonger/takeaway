@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="takeaway.dao.shop.shopDetailMapper">
+    <insert id="insertOrderByDetail">
+        insert into orders
+        <trim prefixOverrides="," prefix="(" suffix=")">
+            <if test="goToUserNum != null">
+                ,goToUserNum
+            </if>
+            <if test="shopName != null and shopName != ''">
+                ,shopName
+            </if>
+            <if test="dishName != null and dishName != ''">
+                ,dishName
+            </if>
+            <if test="dishPrice != null and dishPrice != ''">
+                ,dishPrice
+            </if>
+            <if test="orderTime != null">
+                ,orderTime
+            </if>
+            <if test="handToAddr != null and handToAddr != ''">
+                ,handToAddr
+            </if>
+        </trim>
+        <trim prefixOverrides="," prefix="values(" suffix=")">
+            <if test="goToUserNum != null">
+                ,#{goToUserNum}
+            </if>
+            <if test="shopName != null and shopName != ''">
+                ,#{shopName}
+            </if>
+            <if test="dishName != null and dishName != ''">
+                ,#{dishName}
+            </if>
+            <if test="dishPrice != null">
+                ,#{dishPrice}
+            </if>
+            <if test="orderTime != null">
+                ,#{orderTime}
+            </if>
+            <if test="handToAddr != null and handToAddr != ''">
+                ,#{handToAddr}
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateBsByBsDTO">
+        update business
+        <set>
+            <trim prefixOverrides="," suffix="," suffixOverrides=",">
+                <if test="shopTel != null">
+                    ,shopTel=#{shopTel}
+                </if>
+                <if test="shopDiscount != null">
+                    ,shopDiscount=#{shopDiscount}
+                </if>
+                <if test="operatingStatus != null">
+                    ,operatingStatus=#{operatingStatus}
+                </if>
+                <if test="shopName != null and shopName != ''">
+                    ,shopName=#{shopName}
+                </if>
+                <if test="shopAddress != null and shopAddress != ''">
+                    ,shopAddress=#{shopAddress}
+                </if>
+                <if test="localImg != null and localImg != ''">
+                    ,localImg=#{localImg}
+                </if>
+            </trim>
+
+        </set>
+        <where>
+            <if test="shopId != null">
+                and shopId=#{shopId}
+            </if>
+        </where>
+    </update>
+    <update id="updatePassWordByDTO">
+        update login
+        <set>
+            <if test="password != null and password != ''">
+                password=#{password},
+            </if>
+        </set>
+        <where>
+            <if test="goToUserNum != null">
+                and goToUserNum=#{goToUserNum}
+            </if>
+        </where>
+    </update>
+
+    <select id="queryDishById" resultType="takeaway.action.Dish">
+        select * from dish
+        <where>
+            <if test="shopId != null">
+                and shopId=#{shopId}
+            </if>
+        </where>
+    </select>
+    <select id="queryBusiByDishId" resultType="takeaway.action.Business">
+        select * from dish
+    </select>
+
+    <select id="queryBusinessByDishId" resultType="takeaway.action.Business">
+        select * from business
+        <where>
+            <if test="shopId != null and shopId != ''">
+                and shopId=#{shopId}
+            </if>
+        </where>
+    </select>
+    <select id="queryDishByDishId" resultType="takeaway.action.Dish">
+        select * from dish
+        <where>
+            <if test="dishId != null and dishId != ''">
+                and dishId=#{dishId}
+            </if>
+        </where>
+    </select>
+    <select id="queryBusinessByShopName" resultType="takeaway.action.Business">
+        select shopId
+        from business
+        <where>
+            <if test="shopName != null and shopName">
+                and shopName=#{shopName}
+            </if>
+        </where>
+    </select>
+    <select id="queryOrderByShopName" resultType="takeaway.action.Order">
+        select * from orders
+        <where>
+            and shopName=#{shopName}
+        </where>
+    </select>
+    <select id="queryBsByShopId" resultType="takeaway.action.Business">
+        select * from business
+        <where>
+            <if test="shopId != null">
+                and shopId=#{shopId}
+            </if>
+        </where>
+    </select>
+</mapper>

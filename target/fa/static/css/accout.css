@@ -1,0 +1,47 @@
+a{text-decoration:none; color:black;}
+*{ padding:0px; margin:0px auto;}
+.fl{ float:left;}
+ul,li{ padding:0px; margin:0px; list-style-type:none;}
+.header{width:1000px; height:102px;  overflow:hidden;}
+.end{ width:100%; height:80px; border-top:#377de7 5px solid; text-align:center; line-height:30px; padding-top:10px;}
+body{ margin:0 auto; font-size:12px; font-family:"����";  color:#565455;}
+
+.change{
+	width: 200px;
+	height: 50px;
+	border: 1px solid #ffaf2d;
+	background-color: #76d800;
+	text-decoration: none;
+	display: block;
+	line-height: 50px;
+	text-align: center;
+}
+
+.logo{ width:245px; height:102px; text-align:left;}
+.right{ margin: 30px auto;}
+.header ul{display: flex;height: 70px;justify-content: center;font-size: 25px;font-color:black;}
+.dd{width:1000px;height:700px;}
+.dleft{width:180px;height:600px;float:left;margin-top: 50px;margin-left: 50px;border:1px solid #7373B9;background-color:#fff}
+.dright{width:700px;height:600px;float:right;margin-top: 50px;margin-right:50px;border:1px solid #7373B9;background-color:#fff}
+table{padding-top:17px;}
+.hui{width:100%;height:750px;background-color:#d3eaf3}
+.container{ width: 200px;height: 90px;
+position: absolute;margin-top: 60px;margin-left: 160px;}
+.one{    margin: 55px 0 -100px 10px;border-collapse: separate;border-spacing: 50px; }
+.dh_topd {
+	 width:120px;height:50px; font-size:16px; font-family:"����";
+}
+.dh_topd a:link {
+	 text-decoration:none;color:#5b5b5b;
+}
+.dh_topd a:visited {
+	text-decoration:none;color:#5b5b5b;
+}
+.dh_topd a:hover {
+	 display:block; text-decoration:none;color:#fff;height:30px; WIDTH:100px; font-weight:bold; background:#1f97d8;
+}
+.dh_topd a:active {
+	text-decoration:none;color:#5b5b5b;
+}
+.one { postition: relative;}
+.ph{ position: absolute; height: 100px;width: 100px; top: 80px; left:220px}
